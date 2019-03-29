@@ -37,21 +37,20 @@ def fabric_from_claims(claims):
     fabric = np.zeros((height, width))
     for claim in claims:
         fabric[claim.ymin:claim.ymax, claim.xmin:claim.xmax] +=1
-    return fabric
+    for claim in claims:
+        if (fabric[claim.ymin:claim.ymax, claim.xmin:claim.xmax] == 1).all():
+            claimid = claim.id
+    return fabric, claimid
 
-test_fabric = fabric_from_claims(parselines(TEST_CLAIMS))
+test_fabric = fabric_from_claims(parselines(TEST_CLAIMS))[0]
 assert len(test_fabric[test_fabric > 1]) == 4
 
-def find_intact(claims):
-    fabric = fabric_from_claims(claims)
-    rows, cols = np.where(fabric == 1)
-    corner = (rows[0], cols[0])
+assert fabric_from_claims(parselines(TEST_CLAIMS))[1] == 3
 
 file = "data/day03_input.txt"
 with open(file) as f:
     input_claims = [parseline(line) for line in f]
 
-fabric = fabricclaims(input_claims)
+fabric, intact = fabric_from_claims(input_claims)
 print(len(fabric[fabric>1]))
-    
-
+print(intact)    
